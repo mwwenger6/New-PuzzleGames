@@ -1,0 +1,29 @@
+/* src/Disc.css */
+.disc {
+    display: inline-block;
+    border: 1px solid #333;
+    border-radius: 5px;
+    margin: 2px;
+    height: 20px;
+  }
+  
+  .disc-1 {
+    width: 50px;
+    background-color: #4CAF50;
+  }
+  
+  .disc-2 {
+    width: 70px;
+    background-color: red;
+  }
+  
+  .disc-3 {
+    background-color: blue;
+    width: 90px;
+  }
+  
+  .disc-4{
+    background-color: black;
+    width: 100px;
+    height: 5px;
+  }

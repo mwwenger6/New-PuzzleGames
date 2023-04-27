@@ -1,0 +1,23 @@
+.row > div.col {
+    padding: 5px;
+
+}
+
+.row  {
+    margin: 10px auto;
+
+}
+
+#allTiles{
+    margin: 10px auto;
+    border: 1px solid black;
+
+}
+#tileContainer{
+    width: 405px;
+    height:1000px;
+}
+#tiles{
+    width: 100px;
+    height: 100px;
+}
