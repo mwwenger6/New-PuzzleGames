@@ -11,17 +11,17 @@ const bases = [
 let towers = [
   {
       id: 'column1',
-      title: '1',
+      title: 'firstTower',
       discs: [1,2,3]
   },
   {
       id: 'column2',
-      title: '2',
+      title: 'secondTower',
       discs: []
   },
   {
       id: 'column3',
-      title: '3',
+      title: 'thirdTower',
       discs: []
   }
 ]
@@ -42,13 +42,13 @@ export const Tower = () =>{
       <DragDropContext >
         <Droppable droppableId="disks" onDragEnd={onDragEnd}>
           {(provided) => (
-            <div className='container'>
+            <div className='container' align='center'>
               <div className='row'>
                 {towers.map(({id, title, discs}, index) => {
                   return (
-                    <div id={id} className='col s12 m3 l3' align='center' key={id} {...provided.droppableProps} ref={provided.innerRef}>
+                    <div id={id} className='col s12 m3 l3' key={id} {...provided.droppableProps} ref={provided.innerRef}>
                       {discs.map((size, ind)=> {
-                        const key = `${ind}`;
+                        const key = `${(ind+1)*(index+1)}`;
                         return (
                           <Draggable key={key} draggableId={key} index={ind}>
                             {(provided) => (
@@ -68,14 +68,16 @@ export const Tower = () =>{
           )}
         </Droppable>
       </DragDropContext>
-      <div className='row'>
-        {bases.map((base) => (
-          <div key={base.id} id={base.id} className='col s12 m3 l3' align='center'>
-            <div className='row'>
-              <Disc size={base.size} />
+      <div className='container'>
+        <div className='row'>
+            {bases.map((base) => (
+            <div key={base.id} id={base.id} className='col s12 m3 l3' align='center'>
+                <div className='row'>
+                <Disc size={base.size} />
+                </div>
             </div>
-          </div>
-        ))}
+            ))}
+        </div>
       </div>
       {column3.discs.length === 3 && (
         <div>
