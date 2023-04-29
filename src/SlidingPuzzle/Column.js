@@ -27,7 +27,6 @@ export const Column = (props) => {
                 index={index}
                 key={tile.draggableId}
                 color={tile.color}
-                nullLoc = {props.nullLoc}
             />
             ))}
             {provided.placeholder}

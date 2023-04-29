@@ -47,3 +47,7 @@ export const Stick = (props) => {
 };
 
 export default Stick;
+
+
+
+

@@ -50,7 +50,6 @@ export const Puzzle = () => {
             { number: 13, color: '#ee82ee', draggableId: 'tile13' },
             { number: 14, color: '#ee82ee', draggableId: 'tile14' },
             { number: 15, color: '#ee82ee', draggableId: 'tile15' },
-            { number: 16, color: 'transparent', draggableId: 'blankTile' },
             
         ]
     
@@ -85,15 +84,13 @@ export const Puzzle = () => {
     const shufflePuzzle = () => {
         let tiles = Object.values(puzzle).flat();
       
-        tiles.pop();
       
         for (let i = tiles.length - 1; i > 0; i--) {
           const j = Math.floor(Math.random() * (i + 1));
           [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
         }
 
-        tiles.push({ number: null, color: 'transparent', draggableId: "blankTile" });
-
+        
         const shuffledPuzzle = {
           col0: tiles.slice(0, 4),
           col1: tiles.slice(4, 8),
@@ -139,23 +136,19 @@ export const Puzzle = () => {
                 <Screen>
                 <Column
                     dropId='col0'
-                    tiles={puzzle['col0']}
-                    nullLoc={nullLoc}>
+                    tiles={puzzle['col0']}>
                 </Column>
                 <Column
                     dropId='col1'
-                    tiles={puzzle['col1']}
-                    nullLoc={nullLoc}>
+                    tiles={puzzle['col1']}>
                 </Column>
                 <Column
                     dropId='col2'
-                    tiles={puzzle['col2']}
-                    nullLoc={nullLoc}>
+                    tiles={puzzle['col2']}>
                 </Column>
                 <Column
                     dropId='col3'
-                    tiles={puzzle['col3']}
-                    nullLoc={nullLoc}>
+                    tiles={puzzle['col3']}>
                 </Column>
                 </Screen>
             </DragDropContext>
