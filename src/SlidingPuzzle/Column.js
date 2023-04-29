@@ -14,15 +14,21 @@ S.Wrapper = styled.div`
 `;
 
 export const Column = (props) => {
+
+
   return (
     <Droppable droppableId={props.dropId}>
       {(provided) => (
         <S.Wrapper ref={provided.innerRef}>
           {props.tiles === undefined ? '' : props.tiles.map((tile, index) => (
-            <Droppable droppableId={props.dropI}
-            <div ref={provided.innerRef}>
-
-            </div>
+            <Tile
+                number={tile.number}
+                draggableId={tile.draggableId}
+                index={index}
+                key={tile.draggableId}
+                color={tile.color}
+                nullLoc = {props.nullLoc}
+            />
             ))}
             {provided.placeholder}
         </S.Wrapper>

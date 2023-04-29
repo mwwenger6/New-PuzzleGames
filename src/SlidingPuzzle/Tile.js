@@ -17,12 +17,22 @@ S.Tile = styled.div`
 
 
 export const Tile = (props) => {
+
+    const isNextTo = () => {
+        const rowDiff = Math.abs(Math.floor(props.index / 4) - Math.floor(props.nullLoc / 4));
+        const colDiff = Math.abs((props.index % 4) - (props.nullLoc % 4));
+      
+        return !(rowDiff === 1 && colDiff === 0) && !(rowDiff === 0 && colDiff === 1);
+      };
+      
+
+      
   return (
-    <Draggable draggableId={props.draggableId} index={props.index} isDragDisabled={!props.isDraggable}>
+    <Draggable draggableId={props.draggableId} index={props.index} isDragDisabled={isNextTo}>
       {(provided) => (
         <S.Tile ref={provided.innerRef}  {...(props.isDraggable ? provided.draggableProps : {})} {...(props.isDraggable ? provided.dragHandleProps : {})}
           color={props.color}
-          draggable={props.isDraggable}
+          isDraggable = {isNextTo}
         >
             {props.number}
         </S.Tile>

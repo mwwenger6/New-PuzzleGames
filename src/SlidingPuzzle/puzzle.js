@@ -50,14 +50,15 @@ export const Puzzle = () => {
             { number: 13, color: '#ee82ee', draggableId: 'tile13' },
             { number: 14, color: '#ee82ee', draggableId: 'tile14' },
             { number: 15, color: '#ee82ee', draggableId: 'tile15' },
-            { number: null, color: null, draggableId: 'blankTile' },
+            { number: 16, color: 'transparent', draggableId: 'blankTile' },
             
         ]
     
     })
 
-    
-    const correctPuzzle =[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15]
+    let nullLoc = Object.values(puzzle).flat().indexOf(null);
+
+    const correctPuzzle =[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15, null]
 
     const [isSolved, setIsSolved] = useState(false);
 
@@ -81,22 +82,6 @@ export const Puzzle = () => {
       };
       
 
-    const isNextTo = (index) => {
-        // Flatten the current puzzle state into an array
-        console.log(index)
-        const currentPuzzle = Object.values(puzzle).flat().map(tile => tile.number);
-      
-        // Find the index of the null space in the currentPuzzle array
-        const nullIndex = currentPuzzle.indexOf(null);
-      
-        // Check if the null space is adjacent to the given index
-        const rowDiff = Math.abs(Math.floor(index / 4) - Math.floor(nullIndex / 4));
-        const colDiff = Math.abs((index % 4) - (nullIndex % 4));
-      
-        return !(rowDiff === 1 && colDiff === 0) && !(rowDiff === 0 && colDiff === 1);
-      };
-      
-
     const shufflePuzzle = () => {
         let tiles = Object.values(puzzle).flat();
       
@@ -107,7 +92,7 @@ export const Puzzle = () => {
           [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
         }
 
-        
+        tiles.push({ number: null, color: 'transparent', draggableId: "blankTile" });
 
         const shuffledPuzzle = {
           col0: tiles.slice(0, 4),
@@ -136,12 +121,14 @@ export const Puzzle = () => {
             sourceColumn.splice(result.source.index, 1);
             destColumn.splice(result.destination.index, 0, draggedTile);
 
+            
             setPuzzle({
                 ...puzzle,
                 [sourceId]: sourceColumn,
                 [destinationId]: destColumn,
             });
 
+            nullLoc = Object.values(puzzle).flat().indexOf(null)
             isPuzzleSolved();
         }
     };
@@ -153,22 +140,22 @@ export const Puzzle = () => {
                 <Column
                     dropId='col0'
                     tiles={puzzle['col0']}
-                    isNextTo={isNextTo}
-                ></Column>
+                    nullLoc={nullLoc}>
+                </Column>
                 <Column
                     dropId='col1'
                     tiles={puzzle['col1']}
-                    isNextTo={isNextTo}>
+                    nullLoc={nullLoc}>
                 </Column>
                 <Column
                     dropId='col2'
                     tiles={puzzle['col2']}
-                    isNextTo={isNextTo}>
+                    nullLoc={nullLoc}>
                 </Column>
                 <Column
                     dropId='col3'
                     tiles={puzzle['col3']}
-                    isNextTo={isNextTo}>
+                    nullLoc={nullLoc}>
                 </Column>
                 </Screen>
             </DragDropContext>
