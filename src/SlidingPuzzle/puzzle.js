@@ -29,35 +29,35 @@ export const Puzzle = () => {
 
     const [puzzle, setPuzzle] = useState({
         col0: [
-            { number: 1, color: '#ee82ee', draggableId: 'tile1' },
-            { number: 2, color: '#ee82ee', draggableId: 'tile2' },
-            { number: 3, color: '#ee82ee', draggableId: 'tile3' },
-            { number: 4, color: '#ee82ee', draggableId: 'tile4' },
+            { number: 1, color: '#ee82ee', draggableId: 'tile1', dropId: '0' },
+            { number: 2, color: '#ee82ee', draggableId: 'tile2', dropId: '1' },
+            { number: 3, color: '#ee82ee', draggableId: 'tile3', dropId: '2' },
+            { number: 4, color: '#ee82ee', draggableId: 'tile4', dropId: '3' },
         ],
         col1: [
-            { number: 5, color: '#ee82ee', draggableId: 'tile5' },
-            { number: 6, color: '#ee82ee', draggableId: 'tile6' },
-            { number: 7, color: '#ee82ee', draggableId: 'tile7' },
-            { number: 8, color: '#ee82ee', draggableId: 'tile8' },
+            { number: 5, color: '#ee82ee', draggableId: 'tile5', dropId: '4' },
+            { number: 6, color: '#ee82ee', draggableId: 'tile6', dropId: '5' },
+            { number: 7, color: '#ee82ee', draggableId: 'tile7', dropId: '6' },
+            { number: 8, color: '#ee82ee', draggableId: 'tile8', dropId: '7' },
         ],
         col2: [
-            { number: 9, color: '#ee82ee', draggableId: 'tile9' },
-            { number: 10, color: '#ee82ee', draggableId: 'tile10' },
-            { number: 11, color: '#ee82ee', draggableId: 'tile11' },
-            { number: 12, color: '#ee82ee', draggableId: 'tile12' },
+            { number: 9, color: '#ee82ee', draggableId: 'tile9', dropId: '8' },
+            { number: 10, color: '#ee82ee', draggableId: 'tile10', dropId: '9' },
+            { number: 11, color: '#ee82ee', draggableId: 'tile11', dropId: '10' },
+            { number: 12, color: '#ee82ee', draggableId: 'tile12' , dropId: '11'},
         ],
         col3: [
-            { number: 13, color: '#ee82ee', draggableId: 'tile13' },
-            { number: 14, color: '#ee82ee', draggableId: 'tile14' },
-            { number: 15, color: '#ee82ee', draggableId: 'tile15' },
-            
+            { number: 13, color: '#ee82ee', draggableId: 'tile13', dropId: '12' },
+            { number: 14, color: '#ee82ee', draggableId: 'tile14', dropId: '13' },
+            { number: 15, color: '#ee82ee', draggableId: 'tile15' , dropId: '14'},
+            { number: null, color: 'transparent', draggableId: "blankTile", dropId: '15' }
         ]
     
     })
 
-    let nullLoc = Object.values(puzzle).flat().indexOf(null);
+    let nullLoc = 16;
 
-    const correctPuzzle =[1,2,3,4,5,6,7,8,9,10,11,12,13,14,15, null]
+    const correctPuzzle = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, null]
 
     const [isSolved, setIsSolved] = useState(false);
 
@@ -65,23 +65,23 @@ export const Puzzle = () => {
         // Flatten the current puzzle state into an array
         const currentPuzzle = Object.values(puzzle).flat().map(tile => tile.number);
       
-        if(!isSolved){
-            return false
-        }
         // Compare each element in the currentPuzzle array with the correctPuzzle array
         for (let i = 0; i < correctPuzzle.length; i++) {
           if (currentPuzzle[i] !== correctPuzzle[i]) {
-            setIsSolved(false)
-            return false
+            return false;
           }
         }
-      
-        setIsSolved(true)
         return true;
       };
       
-
-    const shufflePuzzle = () => {
+      useEffect(() => {
+        if (isPuzzleSolved()) {
+          setIsSolved(true);
+        }
+      }, [puzzle]);
+      
+      
+    const shuffledPuzzle = () => {
         let tiles = Object.values(puzzle).flat();
       
       
@@ -90,6 +90,7 @@ export const Puzzle = () => {
           [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
         }
 
+        tiles.push({ number: null, color: 'transparent', draggableId: "blankTile" });
         
         const shuffledPuzzle = {
           col0: tiles.slice(0, 4),
@@ -100,66 +101,62 @@ export const Puzzle = () => {
         setPuzzle(shuffledPuzzle);
       };
 
-      useEffect(() => {
-        shufflePuzzle();
-      }, []);
 
       const handleOnDragEnd = (result) => {
         if (!result.destination) return;
-
+        console.log(result);
+      
         const sourceId = result.source.droppableId;
         const destinationId = result.destination.droppableId;
-
-        if (sourceId !== destinationId) {
-            const sourceColumn = [...puzzle[sourceId]];
-            const destColumn = [...puzzle[destinationId]];
-            const draggedTile = sourceColumn[result.source.index];
-
-            sourceColumn.splice(result.source.index, 1);
-            destColumn.splice(result.destination.index, 0, draggedTile);
-
-            
-            setPuzzle({
-                ...puzzle,
-                [sourceId]: sourceColumn,
-                [destinationId]: destColumn,
-            });
-
-            nullLoc = Object.values(puzzle).flat().indexOf(null)
-            isPuzzleSolved();
+      
+        const sourceColumnId = sourceId.split('-')[0];
+        const destinationColumnId = destinationId.split('-')[0];
+      
+        if (sourceColumnId === destinationColumnId) {
+          const column = [...puzzle[sourceColumnId]];
+          const [removed] = column.splice(result.source.index, 1);
+          column.splice(result.destination.index, 0, removed);
+      
+          setPuzzle({
+            ...puzzle,
+            [sourceColumnId]: column,
+          });
+        } else {
+          const sourceColumn = [...puzzle[sourceColumnId]];
+          const destColumn = [...puzzle[destinationColumnId]];
+          const [draggedTile] = sourceColumn.splice(result.source.index, 1);
+      
+          const [replacedTile] = destColumn.splice(result.destination.index, 1 , draggedTile);
+          sourceColumn.splice(result.source.index, 0, replacedTile);
+          setPuzzle({
+            ...puzzle,
+            [sourceColumnId]: sourceColumn,
+            [destinationColumnId]: destColumn,
+          });
         }
-    };
+      
+        nullLoc = Object.values(puzzle).flat().indexOf(null);
+        isPuzzleSolved();
+      };
+      
 
     return (
         <Wrapper>
-            <DragDropContext onDragEnd={handleOnDragEnd}>
-                <Screen>
-                <Column
-                    dropId='col0'
-                    tiles={puzzle['col0']}>
-                </Column>
-                <Column
-                    dropId='col1'
-                    tiles={puzzle['col1']}>
-                </Column>
-                <Column
-                    dropId='col2'
-                    tiles={puzzle['col2']}>
-                </Column>
-                <Column
-                    dropId='col3'
-                    tiles={puzzle['col3']}>
-                </Column>
-                </Screen>
-            </DragDropContext>
-            {isPuzzleSolved() && (
-                <div>
-                    <h1>Congrats, you completed the puzzle!</h1>
-                </div>
-            )}
+          <DragDropContext onDragEnd={handleOnDragEnd}>
+            <Screen>
+              {Object.keys(puzzle).map((key, index) => (
+                <Column key={key} columnId={key} tiles={puzzle[key]} />
+              ))}
+            </Screen>
+          </DragDropContext>
+          {isSolved && (
+            <div>
+              <h1>Congrats, you completed the puzzle!</h1>
+            </div>
+          )}
         </Wrapper>
-        
-    );
+      );
+      
 }
 
 export default Puzzle;

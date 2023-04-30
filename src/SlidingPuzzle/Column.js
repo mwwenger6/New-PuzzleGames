@@ -14,26 +14,29 @@ S.Wrapper = styled.div`
 `;
 
 export const Column = (props) => {
-
-
-  return (
-    <Droppable droppableId={props.dropId}>
-      {(provided) => (
-        <S.Wrapper ref={provided.innerRef}>
-          {props.tiles === undefined ? '' : props.tiles.map((tile, index) => (
-            <Tile
-                number={tile.number}
-                draggableId={tile.draggableId}
-                index={index}
-                key={tile.draggableId}
-                color={tile.color}
-            />
-            ))}
-            {provided.placeholder}
-        </S.Wrapper>
-      )}
-    </Droppable>
-  );
-};
+    return (
+      <S.Wrapper>
+        {props.tiles.map((tile, index) => {
+          const dropId = `${props.columnId}-drop${index}`;
+          return (
+            <Droppable key={dropId} droppableId={dropId}>
+              {(provided) => (
+                <div ref={provided.innerRef}>
+                  <Tile
+                    number={tile.number}
+                    draggableId={tile.draggableId}
+                    index={index}
+                    key={tile.draggableId}
+                  />
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          );
+        })}
+      </S.Wrapper>
+    );
+  };
+  
 
 export default Column;
