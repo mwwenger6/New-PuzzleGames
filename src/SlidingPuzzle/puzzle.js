@@ -48,16 +48,16 @@ export const Puzzle = () => {
         ],
         col3: [
             { number: 13, color: '#ee82ee', draggableId: 'tile13', dropId: '12' },
-            { number: 14, color: '#ee82ee', draggableId: 'tile14', dropId: '13' },
             { number: 15, color: '#ee82ee', draggableId: 'tile15' , dropId: '14'},
-            { number: null, color: 'transparent', draggableId: "blankTile", dropId: '15' }
+            { number: 14, color: '#ee82ee', draggableId: 'tile14', dropId: '13' },
+            { number: null, color: '#ee82ee', draggableId: "blankTile", dropId: '15' }
         ]
     
     })
 
-    let nullLoc = 16;
+    const [nullLoc, setNullLoc] = useState(16);
 
-    const correctPuzzle = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, null]
+    const correctPuzzle = [1, 5, 9, 13, 2, 6, 10, 14, 3, 7, 11, 15, 4, 8, 12, null]
 
     const [isSolved, setIsSolved] = useState(false);
 
@@ -75,6 +75,9 @@ export const Puzzle = () => {
       };
       
       useEffect(() => {
+        const flattenedPuzzle = Object.values(puzzle).flat();
+        const newNullLoc = flattenedPuzzle.findIndex((tile) => tile.number === null) + 1;
+        setNullLoc(newNullLoc);
         if (isPuzzleSolved()) {
           setIsSolved(true);
         }
@@ -90,7 +93,7 @@ export const Puzzle = () => {
           [tiles[i], tiles[j]] = [tiles[j], tiles[i]];
         }
 
-        tiles.push({ number: null, color: 'transparent', draggableId: "blankTile" });
+        tiles.push({ number: null, color: '#ee82ee', draggableId: "blankTile" });
         
         const shuffledPuzzle = {
           col0: tiles.slice(0, 4),
@@ -104,7 +107,6 @@ export const Puzzle = () => {
 
       const handleOnDragEnd = (result) => {
         if (!result.destination) return;
-        console.log(result);
       
         const sourceId = result.source.droppableId;
         const destinationId = result.destination.droppableId;
@@ -112,40 +114,50 @@ export const Puzzle = () => {
         const sourceColumnId = sourceId.split('-')[0];
         const destinationColumnId = destinationId.split('-')[0];
       
-        if (sourceColumnId === destinationColumnId) {
-          const column = [...puzzle[sourceColumnId]];
-          const [removed] = column.splice(result.source.index, 1);
-          column.splice(result.destination.index, 0, removed);
+        const sourceIndex = result.source.index;
+        const destinationIndex = result.destination.index;
       
-          setPuzzle({
-            ...puzzle,
-            [sourceColumnId]: column,
-          });
-        } else {
-          const sourceColumn = [...puzzle[sourceColumnId]];
-          const destColumn = [...puzzle[destinationColumnId]];
-          const [draggedTile] = sourceColumn.splice(result.source.index, 1);
+        const sourceFlatIndex = parseInt(sourceColumnId.slice(-1)) * 4 + sourceIndex;
+        const destinationFlatIndex = parseInt(destinationColumnId.slice(-1)) * 4 + destinationIndex;
       
-          const [replacedTile] = destColumn.splice(result.destination.index, 1 , draggedTile);
-          sourceColumn.splice(result.source.index, 0, replacedTile);
-          setPuzzle({
-            ...puzzle,
-            [sourceColumnId]: sourceColumn,
-            [destinationColumnId]: destColumn,
-          });
+        const rowDiff = Math.abs(Math.floor(sourceFlatIndex / 4) - Math.floor((nullLoc - 1) / 4));
+        const colDiff = Math.abs((sourceFlatIndex % 4) - ((nullLoc - 1) % 4));
+      
+        const isNextToNull = (rowDiff === 1 && colDiff === 0) || (rowDiff === 0 && colDiff === 1);
+      
+        if (isNextToNull && destinationFlatIndex === nullLoc - 1) {
+          if (sourceColumnId === destinationColumnId) {
+            const column = [...puzzle[sourceColumnId]];
+            const [removed] = column.splice(result.source.index, 1);
+            column.splice(result.destination.index, 0, removed);
+      
+            setPuzzle({
+              ...puzzle,
+              [sourceColumnId]: column,
+            });
+          } else {
+            const sourceColumn = [...puzzle[sourceColumnId]];
+            const destColumn = [...puzzle[destinationColumnId]];
+            const [draggedTile] = sourceColumn.splice(result.source.index, 1);
+      
+            const [replacedTile] = destColumn.splice(result.destination.index, 1 , draggedTile);
+            sourceColumn.splice(result.source.index, 0, replacedTile);
+            setPuzzle({
+              ...puzzle,
+              [sourceColumnId]: sourceColumn,
+              [destinationColumnId]: destColumn,
+            });
+          }
         }
-      
-        nullLoc = Object.values(puzzle).flat().indexOf(null);
-        isPuzzleSolved();
       };
       
-
+      
     return (
         <Wrapper>
           <DragDropContext onDragEnd={handleOnDragEnd}>
             <Screen>
               {Object.keys(puzzle).map((key, index) => (
-                <Column key={key} columnId={key} tiles={puzzle[key]} />
+                <Column key={key} columnId={key} tiles={puzzle[key]} color={puzzle[key][0].color} nullLoc={nullLoc}/>
               ))}
             </Screen>
           </DragDropContext>

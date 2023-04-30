@@ -10,7 +10,7 @@ S.Disc = styled.div`
   background-color: ${(props) => props.color};
   z-index: 1;
   align-self: center;
-  cursor: ${(props) => (props.isDraggable ? 'initial' : 'normal select')};
+  cursor: ${(props) => (props.isDraggable ? 'grab' : 'not-allowed')};
   transition: transform 0.2s ease-out;
 `;
 

@@ -17,22 +17,26 @@ export const Column = (props) => {
     return (
       <S.Wrapper>
         {props.tiles.map((tile, index) => {
-          const dropId = `${props.columnId}-drop${index}`;
-          return (
+        const dropId = `${props.columnId}-drop${index}`;
+        const flatIndex = props.tiles.length * parseInt(props.columnId.slice(-1)) + index;
+        return (
             <Droppable key={dropId} droppableId={dropId}>
-              {(provided) => (
+            {(provided) => (
                 <div ref={provided.innerRef}>
-                  <Tile
+                <Tile
                     number={tile.number}
                     draggableId={tile.draggableId}
                     index={index}
                     key={tile.draggableId}
-                  />
-                  {provided.placeholder}
+                    color={props.color}
+                    nullLoc={props.nullLoc}
+                    flatIndex={flatIndex}
+                />
+                {provided.placeholder}
                 </div>
-              )}
+            )}
             </Droppable>
-          );
+        );
         })}
       </S.Wrapper>
     );
